@@ -1,110 +1,122 @@
-// ============================================================
-// STRAKON - Data Lists
-// ============================================================
+// data/pricingData.ts
 
-export interface PricingFeature {
-  id: number;
+export interface Feature {
+  id: string;
   text: string;
 }
 
 export interface PricingOption {
-  id: number;
+  id: string;
   tag: string;
   icon: "monitor" | "key";
   title: string;
-  features: PricingFeature[];
+  accentColor: "blue" | "gold";
+  features: Feature[];
   idealTitle: string;
-  idealItems: PricingFeature[];
+  idealItems: Feature[];
   price: string;
-  priceNote: string;
-  tvaNoteTitle: string;
-  tvaFeatures: PricingFeature[];
+  tvaFeatures: Feature[];
   tvaPrice: string;
-  tvaPriceNote: string;
+  tvaPriceNote?: string;
   ctaLabel: string;
   ctaHref: string;
-  accentColor: "blue" | "gold";
 }
 
-export const pricingOptions: PricingOption[] = [
-  {
-    id: 1,
-    tag: "Option 1 – STRAKON en location (3 mois)",
-    icon: "monitor",
-    title: "Lancez vos projets immédiatement",
-    features: [
-      { id: 1, text: "Licence STRAKON complète" },
-      { id: 2, text: "Accès 3 mois immédiat" },
-      { id: 3, text: "Support technique" },
-    ],
-    idealTitle: "Idéal pour",
-    idealItems: [
-      { id: 1, text: "Tester sur un projet concret" },
-      { id: 2, text: "Former votre équipe" },
-      { id: 3, text: "Répondre vite à une opportunité" },
-    ],
-    price: "1 100",
-    priceNote: "",
-    tvaNoteTitle: "TVA au preneur :",
-    tvaFeatures: [
-      { id: 1, text: "Licence STRAKON complète" },
-      { id: 2, text: "Accès 3 mois immédiat" },
-      { id: 3, text: "Support technique" },
-    ],
-    tvaPrice: "5 900",
-    tvaPriceNote: "-10% DU PRIX CATALOGUE",
-    ctaLabel: "Choisir location 3 mois",
-    ctaHref: "#",
-    accentColor: "blue",
-  },
-  {
-    id: 2,
-    tag: "Option 2 – Licence STRAKON définitive",
-    icon: "key",
-    title: "Investissez durablement dans votre performance",
-    features: [
-      { id: 1, text: "Licence STRAKON définitive" },
-      { id: 2, text: "6 mois de maintenance OFFERTS" },
-      { id: 3, text: "Support premium" },
-    ],
-    idealTitle: "Idéal pour",
-    idealItems: [
-      { id: 1, text: "Standardiser vos méthodes" },
-      { id: 2, text: "Booster votre productivité" },
-    ],
-    price: "5 900",
-    priceNote: "-10% DU PRIX CATALOGUE",
-    tvaNoteTitle: "TVA au preneur :",
-    tvaFeatures: [
-      { id: 1, text: "Licence STRAKON définitive" },
-      { id: 2, text: "6 mois de maintenance OFFERTS" },
-      { id: 3, text: "Support premium" },
-    ],
-    tvaPrice: "5 900",
-    tvaPriceNote: "(TVA au preneur — 10% du prix catalogue)",
-    ctaLabel: "Je choisis la licence définitive",
-    ctaHref: "#",
-    accentColor: "gold",
-  },
-];
-
-export interface TVACondition {
-  id: number;
+export interface TvaCondition {
+  id: string;
   description: string;
   detail: string;
 }
 
-export const tvaConditions: TVACondition[] = [
+export const pricingOptions: PricingOption[] = [
   {
-    id: 1,
+    id: "option-1",
+    tag: "🟦 OPTION 1 – STRAKON en location (3 mois)",
+    icon: "monitor",
+    title: "Lancez vos projets immédiatement",
+    accentColor: "blue",
+    features: [
+      { id: "f1", text: "Licence STRAKON complète" },
+      { id: "f2", text: "Accès immédiat pendant 3 mois" },
+      { id: "f3", text: "Support technique" },
+    ],
+    idealTitle: "Idéal pour",
+    idealItems: [
+      { id: "i1", text: "Tester le logiciel sur un projet concret" },
+      { id: "i2", text: "Former votre équipe" },
+      { id: "i3", text: "Répondre rapidement à un marché" },
+    ],
+    price: "1 100",
+    tvaFeatures: [
+      { id: "t0", text: "TVA applicable selon votre situation" },
+      {
+        id: "t1",
+        text: "Une facture vous est envoyée.",
+      },
+      {
+        id: "t2",
+        text: "Dès réception du paiement, vous recevez un code de déblocage valable 3 mois.",
+      },
+      {
+        id: "t3",
+        text: "Vous pouvez commencer à travailler immédiatement.",
+      },
+    ],
+    tvaPrice: "1 100",
+    ctaLabel: "Je démarre avec la location 3 mois",
+    ctaHref: "#contact",
+  },
+  {
+    id: "option-2",
+    tag: "🟨 OPTION 2 – Licence STRAKON définitive",
+    icon: "key",
+    title: "Investissez durablement dans votre performance",
+    accentColor: "gold",
+    features: [
+      { id: "f1", text: "Licence STRAKON définitive" },
+      { id: "f2", text: "6 mois de maintenance OFFERTS" },
+      { id: "f3", text: "Support technique prioritaire" },
+    ],
+    idealTitle: "Idéal pour",
+    idealItems: [
+      { id: "i1", text: "Intégrer STRAKON durablement dans votre bureau d'études" },
+      { id: "i2", text: "Standardiser vos méthodes" },
+      { id: "i3", text: "Améliorer votre productivité sur le long terme" },
+    ],
+    price: "5 900",
+    tvaFeatures: [
+      { id: "t0", text: "Environ 10 % du prix catalogue — TVA applicable selon votre situation" },
+      {
+        id: "t1",
+        text: "Une facture vous est émise.",
+      },
+      {
+        id: "t2",
+        text: "Dès réception du paiement, vous recevez un code de déblocage temporaire valable 15 jours.",
+      },
+      {
+        id: "t3",
+        text: "La clé définitive vous est ensuite envoyée.",
+      },
+    ],
+    tvaPrice: "5 900",
+    tvaPriceNote: "-10% du prix catalogue",
+    ctaLabel: "Je choisis la licence définitive",
+    ctaHref: "#contact",
+  },
+];
+
+export const tvaConditions: TvaCondition[] = [
+  {
+    id: "tva1",
     description:
-      "Entreprises disposant d'un <strong>numéro de TVA intracommunautaire</strong> valide <strong>hors Luxembourg</strong> :",
+      "Entreprises disposant d'un numéro de TVA intracommunautaire valide <strong>hors Luxembourg</strong>",
     detail: "→ Facturation sans TVA (autoliquidation).",
   },
   {
-    id: 2,
+    id: "tva2",
     description:
-      "Entreprises basées au <strong>Luxembourg</strong> ou sans numéro de <strong>TVA intracommunautaire</strong> valide :",
-    detail: "→ TVA luxembourgeoise de 17%",
+      "Entreprises basées au <strong>Luxembourg</strong> ou sans numéro de TVA intracommunautaire valide",
+    detail: "→ TVA luxembourgeoise de 17 % appliquée sur le prix HT.",
   },
 ];

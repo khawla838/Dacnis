@@ -40,7 +40,7 @@ export const formFields: FormField[] = [
     { id: "address",     placeholder: "Adresse complète",                     type: "text",   required: false },
     { id: "ville",       placeholder: "Ville",                                type: "text",   required: false },
     { id: "codepostale", placeholder: "Code postal",                          type: "text",   required: false },
-    { id: "company",     placeholder: "Société",                              type: "text",   required: true  },
     { id: "country",     placeholder: "Pays",                                 type: "select", required: false, options: countries },
+    { id: "company",     placeholder: "Société",                              type: "text",   required: true  },
     { id: "vat",         placeholder: "Numéro de TVA intracommunautaire",     type: "text",   required: false },
 ];
