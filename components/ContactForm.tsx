@@ -47,7 +47,7 @@ export default function ContactForm() {
 
   useEffect(() => {
     if (status === "success") {
-      const timer = setTimeout(() => setStatus("idle"), 4000);
+      const timer = setTimeout(() => setStatus("idle"), 2000);
       return () => clearTimeout(timer);
     }
   }, [status]);
@@ -132,14 +132,9 @@ export default function ContactForm() {
       </form>
 
       {status === "success" && (
-        <div className="toast-success">
-          <div className="toast-success__content">
-            <div className="toast-success__icon">🎉</div>
-            <div className="toast-success__text">
-              <strong>Inscription enregistrée !</strong>
-              <p>Votre demande a bien été reçue. Notre équipe vous recontactera sous peu.</p>
-            </div>
-          </div>
+        <div className="banner-success">
+          <div className="banner-success__icon">✓</div>
+          <span className="banner-success__text">Inscription enregistrée !</span>
         </div>
       )}
     </>
