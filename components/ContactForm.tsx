@@ -136,8 +136,8 @@ export default function ContactForm() {
           <div className="toast-success__content">
             <div className="toast-success__icon">🎉</div>
             <div className="toast-success__text">
-              <strong>Bienvenue chez STRAKON !</strong>
-              <p>Votre accès est maintenant activé. Vérifiez votre boîte mail !</p>
+              <strong>Inscription enregistrée !</strong>
+              <p>Votre demande a bien été reçue. Notre équipe vous recontactera sous peu.</p>
             </div>
           </div>
         </div>

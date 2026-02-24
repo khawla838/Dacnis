@@ -1,6 +1,6 @@
 // app/api/subscribe/route.ts
 // ════════════════════════════════════════════════════════════════════
-// REFACTORED: Suppression SMTP — Brevo contacts ONLY
+// API ENDPOINT — Synchronise contacts dans Brevo UNIQUEMENT
 // ════════════════════════════════════════════════════════════════════
 import { NextRequest, NextResponse } from "next/server";
 
@@ -29,12 +29,21 @@ async function brevoRequest(endpoint: string, body: object) {
     body: JSON.stringify(body),
   });
 
+  // Log détaillé pour débugger
+  console.log(`📡 Brevo [${endpoint}] Status: ${res.status}`);
+
   if (!res.ok) {
-    const err = await res.json().catch(() => ({ message: "Erreur inconnue" }));
-    throw new Error(err.message || err.code || `Brevo error ${res.status}`);
+    const errText = await res.text();
+    console.error(`❌ Brevo Error Body: ${errText}`);
+    try {
+      const errJson = JSON.parse(errText);
+      throw new Error(errJson.message || errJson.code || `Brevo error ${res.status}`);
+    } catch {
+      throw new Error(`Brevo error ${res.status}: ${errText}`);
+    }
   }
 
-  // Certains succès (201, 204) n'ont pas de corps JSON
+  // Si c'est un succès (200, 201, 204), on vérifie le contenu
   const contentType = res.headers.get("content-type");
   if (res.status === 204 || !contentType || !contentType.includes("application/json")) {
     return null;
@@ -44,7 +53,7 @@ async function brevoRequest(endpoint: string, body: object) {
 }
 
 /**
- * Handler POST : Synchronise le contact dans Brevo et ajoute les attributs
+ * Handler POST : Synchronise le contact dans Brevo avec tous les attributs
  */
 export async function POST(req: NextRequest) {
   try {
@@ -79,8 +88,12 @@ export async function POST(req: NextRequest) {
 
     // ─────────────────────────────────────────────────────
     // 1️⃣  SYNCHRONISER LE CONTACT DANS BREVO
-    //     + AJOUTER LES ATTRIBUTS À LA LISTE
     // ─────────────────────────────────────────────────────
+    console.log(`📝 Tentative d'ajout du contact : ${email}`);
+
+    // On utilise listid de l'env si présent, sinon fallback sur BREVO_LIST_ID (7)
+    const listId = process.env.listid ? parseInt(process.env.listid) : BREVO_LIST_ID;
+
     await brevoRequest("/contacts", {
       email,
       attributes: {
@@ -94,20 +107,52 @@ export async function POST(req: NextRequest) {
         VAT: vat ?? "",
         PHONE: telephone ?? "",
       },
-      listIds: [BREVO_LIST_ID],
+      listIds: [listId],
       updateEnabled: true,
     });
 
     // ─────────────────────────────────────────────────────
-    // ✅ SUCCÈS — Contact sauvegardé dans Brevo
+    // 2️⃣  ENVOYER L'EMAIL DE CONFIRMATION (SMTP)
     // ─────────────────────────────────────────────────────
-    console.log(`✅ Contact sauvegardé dans Brevo : ${email}`);
-    return NextResponse.json({ success: true });
+    await brevoRequest("/smtp/email", {
+      sender: {
+        name: process.env.ADMIN_NAME ?? "STRAKON",
+        email: process.env.ADMIN_EMAIL ?? "islemhamami345@gmail.com",
+      },
+      to: [{ email, name: `${firstName} ${lastName}`.trim() }],
+      subject: "Inscription confirmée – STRAKON",
+      htmlContent: `
+        <div style="font-family:sans-serif;max-width:600px;margin:auto;padding:32px">
+          <h2 style="color:#1a3c6e">Bienvenue chez STRAKON, ${firstName} !</h2>
+          <p>Votre demande d'inscription a bien été enregistrée.</p>
+          <p>Notre équipe vous recontactera très prochainement pour finaliser votre accès.</p>
+          <hr style="margin:24px 0;border:none;border-top:1px solid #e5e7eb"/>
+          <p style="color:#6b7280;font-size:13px">
+            Société : ${company ?? "—"}<br/>
+            Adresse : ${address ?? "—"}<br/>
+            Ville   : ${ville ?? "—"}<br/>
+            Code postal : ${codepostale ?? "—"}<br/>
+            Pays    : ${country ?? "—"}<br/>
+            Téléphone : ${telephone ?? "—"}<br/>
+            TVA     : ${vat ?? "—"}
+          </p>
+          <p style="color:#6b7280;font-size:13px">L'équipe STRAKON</p>
+        </div>
+      `,
+    });
+
+    console.log(`✅ Succès total pour : ${email} (Liste: ${listId})`);
+
+    return NextResponse.json({
+      success: true,
+      message: "Contact enregistré et email envoyé."
+    });
 
   } catch (err) {
-    console.error("[subscribe]", err);
+    const errorMsg = err instanceof Error ? err.message : "Erreur serveur";
+    console.error("[subscribe] Erreur :", errorMsg);
     return NextResponse.json(
-      { error: "Erreur serveur, réessayez." },
+      { error: errorMsg },
       { status: 500 }
     );
   }
