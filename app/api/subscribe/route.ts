@@ -141,11 +141,43 @@ export async function POST(req: NextRequest) {
       `,
     });
 
+    // ─────────────────────────────────────────────────────
+    // 3️⃣  NOTIFIER L'ADMINISTRATEUR (SMTP)
+    // ─────────────────────────────────────────────────────
+    await brevoRequest("/smtp/email", {
+      sender: {
+        name: process.env.ADMIN_NAME ?? "STRAKON",
+        email: process.env.ADMIN_EMAIL ?? "islemhamami345@gmail.com",
+      },
+      to: [{
+        email: process.env.ADMIN_EMAIL ?? "islemhamami345@gmail.com",
+        name: process.env.ADMIN_NAME ?? "Admin"
+      }],
+      subject: `Nouvelle inscription : ${company ?? name}`,
+      htmlContent: `
+        <div style="font-family:sans-serif;max-width:600px;margin:auto;padding:32px">
+          <h2 style="color:#1a3c6e">Nouvelle demande d'inscription reçue</h2>
+          <p>Un utilisateur vient de s'inscrire sur le site :</p>
+          <ul style="line-height:1.6">
+            <li><strong>Nom :</strong> ${name}</li>
+            <li><strong>Email :</strong> ${email}</li>
+            <li><strong>Téléphone :</strong> ${telephone ?? "—"}</li>
+            <li><strong>Société :</strong> ${company ?? "—"}</li>
+            <li><strong>Ville :</strong> ${ville ?? "—"}</li>
+            <li><strong>Pays :</strong> ${country ?? "—"}</li>
+            <li><strong>TVA :</strong> ${vat ?? "—"}</li>
+          </ul>
+          <hr style="margin:24px 0;border:none;border-top:1px solid #e5e7eb"/>
+          <p style="color:#6b7280;font-size:13px">Ceci est une notification automatique.</p>
+        </div>
+      `,
+    });
+
     console.log(`✅ Succès total pour : ${email} (Liste: ${listId})`);
 
     return NextResponse.json({
       success: true,
-      message: "Contact enregistré et email envoyé."
+      message: "Contact enregistré et emails envoyés (client + admin)."
     });
 
   } catch (err) {
